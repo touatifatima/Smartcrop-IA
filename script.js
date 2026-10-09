@@ -1,166 +1,165 @@
-// document.getElementById("predictionForm").addEventListener("submit", function(event) {
-//   event.preventDefault();
-//<strong>💧 Calculated Humidity:</strong> ${result.humidity_calculated.toFixed(1)}%
-//   const data = {
-//     N: parseFloat(document.getElementById("N").value),
-//     P: parseFloat(document.getElementById("P").value),
-//     K: parseFloat(document.getElementById("K").value),
-//     temperature: parseFloat(document.getElementById("temperature").value),
-//     humidity: parseFloat(document.getElementById("humidity").value),
-//     ph: parseFloat(document.getElementById("ph").value),
-//     rainfall: parseFloat(document.getElementById("rainfall").value),
-//   };
+﻿// By default, the API runs alongside this page. For a separate deployed frontend,
+// set window.SMARTCROP_API_URL to the deployed API origin before this script loads.
+const API_BASE_URL = (window.SMARTCROP_API_URL || window.location.origin).replace(/\/$/, "");
+document.getElementById("apiDocsLink").href = `${API_BASE_URL}/docs`;
 
-//   fetch("http://127.0.0.1:5000/predict", {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json"
-//     },
-//     body: JSON.stringify(data)
-//   })
-//     .then(response => response.json())
-//     .then(result => {
-//       document.getElementById("result").innerText = "Predicted Crop: " + result.prediction;
-//     })
-//     .catch(error => {
-//       console.error("Error:", error);
-//       document.getElementById("result").innerText = "An error occurred while predicting.";
-//     });
-// });
- 
-   
-                // Get form data function
-        function getFormData() {
-            return {
-                N: parseFloat(document.getElementById("N").value),
-                P: parseFloat(document.getElementById("P").value),
-                K: parseFloat(document.getElementById("K").value),
-                temperature: parseFloat(document.getElementById("temperature").value),
-                rainfall: parseFloat(document.getElementById("rainfall").value),
-                ph: parseFloat(document.getElementById("ph").value),
-                Humidity_calculated: parseFloat(document.getElementById("humidity").value),
-                State_Name: document.getElementById("State_Name").value,
-                Crop_Type: document.getElementById("Crop_Type").value,
-                Area_in_hectares: parseFloat(document.getElementById("area").value),
-                Production_in_tons: parseFloat(document.getElementById("production").value),
-                Yield_ton_per_hec: parseFloat(document.getElementById("yield").value),
-            };
-        }
+const form = document.getElementById("predictionForm");
+const result = document.getElementById("result");
+const limeResults = document.getElementById("limeResults");
+const loading = document.getElementById("loadingDiv");
+const predictButton = document.getElementById("predictBtn");
+const explainButton = document.getElementById("explainBtn");
 
-        // Show loading state
-        function showLoading(show = true) {
-            const loadingDiv = document.getElementById("loadingDiv");
-            const predictBtn = document.getElementById("predictBtn");
-            const explainBtn = document.getElementById("explainBtn");
-            
-            if (show) {
-                loadingDiv.classList.add("show");
-                predictBtn.disabled = true;
-                explainBtn.disabled = true;
-            } else {
-                loadingDiv.classList.remove("show");
-                predictBtn.disabled = false;
-                explainBtn.disabled = false;
-            }
-        }
+function getFormData() {
+  return {
+    N: Number(document.getElementById("N").value),
+    P: Number(document.getElementById("P").value),
+    K: Number(document.getElementById("K").value),
+    temperature: Number(document.getElementById("temperature").value),
+    rainfall: Number(document.getElementById("rainfall").value),
+    ph: Number(document.getElementById("ph").value),
+    Humidity_calculated: Number(document.getElementById("humidity").value),
+    State_Name: document.getElementById("State_Name").value,
+    Crop_Type: document.getElementById("Crop_Type").value,
+    Area_in_hectares: Number(document.getElementById("area").value),
+    Production_in_tons: Number(document.getElementById("production").value),
+    Yield_ton_per_hec: Number(document.getElementById("yield").value),
+  };
+}
 
-        // Display result
-        function displayResult(message, isError = false) {
-            const resultDiv = document.getElementById("result");
-            const className = isError ? "error" : "success";
-            resultDiv.innerHTML = `<div class="${className}">${message}</div>`;
-        }
+function setLoading(isLoading, message = "Reading your field details…") {
+  loading.classList.toggle("show", isLoading);
+  loading.querySelector("span:last-child").textContent = message;
+  predictButton.disabled = isLoading;
+  explainButton.disabled = isLoading;
+}
 
-        // Display LIME results
-        function displayLimeResults(limeData) {
-            const limeDiv = document.getElementById("limeResults");
-            
-            if (limeData.status === "error") {
-                limeDiv.innerHTML = `<div class="error">LIME Explanation Error: ${limeData.error_message}</div>`;
-                return;
-            }
+function showError(message) {
+  result.innerHTML = "";
+  const card = document.createElement("div");
+  card.className = "error";
+  card.setAttribute("role", "alert");
+  card.textContent = message;
+  result.append(card);
+}
 
-            let html = `
-                <div class="lime-results">
-                    <h2>🧠 AI Explanation for: ${limeData.predicted_crop}</h2>
-                    
-                    <div class="lime-image">
-                        <img src="data:image/png;base64,${limeData.visualization.image_base64}" alt="LIME Explanation Chart">
-                    </div>
-                    
-                    <div class="advice-section">
-                        <div class="advice-title">🌱 Personalized Farming Advice</div>
-            `;
-            
-            limeData.top_advice.forEach(advice => {
-                html += `<div class="advice-item">${advice}</div>`;
-            });
-            
-            html += `
-                    </div>
-                    
-                    <div class="result-card">
-                        <h3>📊 Analysis Summary</h3>
-                        <p><strong>Total Features Analyzed:</strong> ${limeData.summary.total_features_analyzed}</p>
-                        <p><strong>Positive Impact Features:</strong> ${limeData.summary.positive_impact_features}</p>
-                        <p><strong>Negative Impact Features:</strong> ${limeData.summary.negative_impact_features}</p>
-                        <p><strong>Neutral Impact Features:</strong> ${limeData.summary.neutral_impact_features}</p>
-                    </div>
-                </div>
-            `;
-            
-            limeDiv.innerHTML = html;
-        }
+async function request(endpoint, data) {
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  } catch {
+    throw new Error(`We couldn’t reach the crop service. Check that the API is running at ${API_BASE_URL}, then try again.`);
+  }
 
-        // Predict crop
-        document.getElementById("predictionForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            showLoading(true);
-            
-            const data = getFormData();
-            
-            axios.post("http://localhost:8000/predict", data, {
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(response => {
-                showLoading(false);
-                const result = response.data;
-                displayResult(`
-                    <strong>🎯 Recommmended Crop:</strong> ${result.predicted_crop}<br>
-                    <strong>🎯 Confidence:</strong> ${(result.confidence * 100).toFixed(1)}%<br>
-                    
-                `);
-            })
-            .catch(error => {
-                showLoading(false);
-                console.error("Error:", error);
-                displayResult("❌ An error occurred while predicting. Please check your connection and try again.", true);
-            });
-        });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const detail = typeof payload.detail === "string" ? payload.detail : "Please check your field details and try again.";
+    throw new Error(detail);
+  }
+  return payload;
+}
 
-        // Explain with LIME
-        document.getElementById("explainBtn").addEventListener("click", function() {
-            showLoading(true);
-            
-            const data = getFormData();
-            
-            axios.post("http://localhost:8000/explain", data, {
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(response => {
-                showLoading(false);
-                displayLimeResults(response.data);
-            })
-            .catch(error => {
-                showLoading(false);
-                console.error("LIME Error:", error);
-                displayResult("❌ An error occurred while generating explanation. Please try again.", true);
-            });
-        });
-  
+function showPrediction(prediction) {
+  if (!prediction.predicted_crop) throw new Error("The crop service did not return a recommendation. Please try again.");
+  const confidence = Math.max(0, Math.min(100, Number(prediction.confidence) * 100));
+  result.innerHTML = `
+    <div class="success">
+      <span class="recommendation-label">Our recommendation</span>
+      <h2 class="crop-name"></h2>
+      <div class="confidence-row"><span>Model confidence</span><strong>${confidence.toFixed(1)}%</strong></div>
+      <div class="confidence-track" aria-label="Model confidence ${confidence.toFixed(1)} percent"><div class="confidence-fill" style="width:${confidence}%"></div></div>
+      <p class="result-context">An estimate based on the information you provided. Consider it alongside local expertise.</p>
+    </div>`;
+  result.querySelector(".crop-name").textContent = prediction.predicted_crop;
+}
 
+function showExplanation(data) {
+  if (data.status === "error") throw new Error(data.error_message || "We couldn’t prepare an explanation. Please try again.");
+  const visualization = data.visualization?.image_base64;
+  const advice = Array.isArray(data.top_advice) ? data.top_advice : [];
+  limeResults.replaceChildren();
 
+  const card = document.createElement("section");
+  card.className = "lime-results";
+  card.setAttribute("aria-label", "Recommendation explanation");
+  const title = document.createElement("h2");
+  title.textContent = `What shaped the ${data.predicted_crop || "crop"} recommendation`;
+  card.append(title);
+
+  if (visualization) {
+    const figure = document.createElement("div");
+    figure.className = "lime-image";
+    const image = document.createElement("img");
+    image.alt = `Feature impact chart for the ${data.predicted_crop || "predicted"} crop recommendation`;
+    image.src = `data:image/png;base64,${visualization}`;
+    figure.append(image);
+    card.append(figure);
+  }
+
+  if (advice.length) {
+    const adviceSection = document.createElement("div");
+    adviceSection.className = "advice-section";
+    const adviceTitle = document.createElement("div");
+    adviceTitle.className = "advice-title";
+    adviceTitle.textContent = "Field notes to consider";
+    adviceSection.append(adviceTitle);
+    advice.slice(0, 5).forEach((note) => {
+      const item = document.createElement("div");
+      item.className = "advice-item";
+      item.textContent = note;
+      adviceSection.append(item);
+    });
+    card.append(adviceSection);
+  }
+
+  if (data.summary) {
+    const summary = document.createElement("div");
+    summary.className = "result-card";
+    const heading = document.createElement("h3");
+    heading.textContent = "Explanation summary";
+    summary.append(heading);
+    const rows = [
+      ["Features explored", data.summary.total_features_analyzed],
+      ["Supporting factors", data.summary.positive_impact_features],
+      ["Factors to review", data.summary.negative_impact_features],
+    ];
+    rows.forEach(([label, value]) => {
+      const row = document.createElement("p");
+      row.textContent = `${label}: ${value ?? 0}`;
+      summary.append(row);
+    });
+    card.append(summary);
+  }
+  limeResults.append(card);
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!form.reportValidity()) return;
+  setLoading(true, "Finding a crop to explore…");
+  limeResults.replaceChildren();
+  try {
+    showPrediction(await request("predict", getFormData()));
+  } catch (error) {
+    showError(error.message || "We couldn’t complete the prediction. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+});
+
+explainButton.addEventListener("click", async () => {
+  if (!form.reportValidity()) return;
+  setLoading(true, "Looking at what shaped the recommendation…");
+  limeResults.replaceChildren();
+  try {
+    showExplanation(await request("explain", getFormData()));
+  } catch (error) {
+    showError(error.message || "We couldn’t prepare an explanation. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+});

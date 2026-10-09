@@ -1,144 +1,95 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crop Recommendation System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f8f3" />
+  <meta name="description" content="Explore a machine learning crop recommendation using your soil, climate, and growing-season information." />
+  <title>Smartcrop-IA | Crop recommendations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Smartcrop-IA home">
+      <span class="brand-icon" aria-hidden="true">S</span>
+      <span>smartcrop<span class="brand-period">.</span></span>
+    </a>
+    <a id="apiDocsLink" class="top-link" href="http://localhost:8000/docs" target="_blank" rel="noreferrer">How it works <span aria-hidden="true">↗</span></a>
+  </header>
 
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="status-dot"></span> A little insight for your next season</span>
+        <h1 id="hero-title">Better growing<br />starts with <span>good ground.</span></h1>
+        <p>Tell us about your field. We’ll help you explore a crop recommendation shaped by your soil, climate, and growing season.</p>
+        <div class="hero-note"><span class="note-icon" aria-hidden="true">✳</span><span>Your field information is used to create a model-generated estimate.</span></div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <span class="sun"></span><span class="hill hill-back"></span><span class="hill hill-front"></span>
+        <span class="field-line line-one"></span><span class="field-line line-two"></span><span class="field-line line-three"></span>
+        <div class="art-label"><span class="art-label-icon">↗</span><span><strong>Made for your field</strong><small>Soil · climate · season</small></span></div>
+      </div>
+    </section>
 
- <body>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <section class="workspace" aria-label="Crop recommendation tool">
+      <div class="form-card">
+        <div class="section-heading">
+          <div><span class="step-label">YOUR FIELD PROFILE</span><h2>Start with what you know</h2><p>A few details help us make sense of your growing conditions.</p></div>
+          <span class="required-note"><span aria-hidden="true">*</span> Required</span>
+        </div>
 
-    <div class="container">
-        <h1>🌱 Smart Crop-XAI </h1>
-        
         <form id="predictionForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="N">Nitrogen (N):</label>
-                    <input type="number" id="N" name="N" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="P">Phosphorus (P):</label>
-                    <input type="number" id="P" name="P" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="K">Potassium (K):</label>
-                    <input type="number" id="K" name="K" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="temperature">Temperature (°C):</label>
-                    <input type="number" step="0.1" id="temperature" name="temperature" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="humidity">Humidity (%):</label>
-                    <input type="number" step="0.1" id="humidity" name="humidity" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="ph">pH Level:</label>
-                    <input type="number" step="0.1" id="ph" name="ph" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="rainfall">Rainfall (mm):</label>
-                    <input type="number" step="0.1" id="rainfall" name="rainfall" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="State_Name">State Name:</label>
-                    <select id="State_Name" name="State_Name" required>
-                        <option value="">--Select State--</option>
-                        <option value="uttar pradesh">Uttar Pradesh</option>
-                        <option value="madhya pradesh">Madhya Pradesh</option>
-                        <option value="karnataka">Karnataka</option>
-                        <option value="bihar">Bihar</option>
-                        <option value="odisha">Odisha</option>
-                        <option value="tamil nadu">Tamil Nadu</option>
-                        <option value="rajasthan">Rajasthan</option>
-                        <option value="assam">Assam</option>
-                        <option value="maharashtra">Maharashtra</option>
-                        <option value="andhra pradesh">Andhra Pradesh</option>
-                        <option value="west bengal">West Bengal</option>
-                        <option value="chhattisgarh">Chhattisgarh</option>
-                        <option value="gujarat">Gujarat</option>
-                        <option value="telangana">Telangana</option>
-                        <option value="kerala">Kerala</option>
-                        <option value="haryana">Haryana</option>
-                        <option value="uttarakhand">Uttarakhand</option>
-                        <option value="himachal pradesh">Himachal Pradesh</option>
-                        <option value="nagaland">Nagaland</option>
-                        <option value="meghalaya">Meghalaya</option>
-                        <option value="punjab">Punjab</option>
-                        <option value="jharkhand">Jharkhand</option>
-                        <option value="arunachal pradesh">Arunachal Pradesh</option>
-                        <option value="jammu and kashmir">Jammu and Kashmir</option>
-                        <option value="manipur">Manipur</option>
-                        <option value="mizoram">Mizoram</option>
-                        <option value="tripura">Tripura</option>
-                        <option value="puducherry">Puducherry</option>
-                        <option value="sikkim">Sikkim</option>
-                        <option value="andaman and nicobar islands">Andaman and Nicobar Islands</option>
-                        <option value="dadra and nagar haveli">Dadra and Nagar Haveli</option>
-                        <option value="chandigarh">Chandigarh</option>
-                        <option value="goa">Goa</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="Crop_Type">Crop Type:</label>
-                    <select id="Crop_Type" name="Crop_Type" required>
-                        <option value="">--Select Crop Type--</option>
-                        <option value="kharif">Kharif</option>
-                        <option value="rabi">Rabi</option>
-                        <option value="summer">Summer</option>
-                        <option value="whole year">Whole Year</option>
-                    </select>
-                </div> 
-                
-                <div class="form-group">
-                    <label for="area">Area (in hectares):</label>
-                    <input type="number" step="0.01" id="area" name="area" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="production">Production (in tons):</label>
-                    <input type="number" step="0.01" id="production" name="production" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="yield">Yield (ton per hectare):</label>
-                    <input type="number" step="0.01" id="yield" name="yield" required>
-                </div>
+          <fieldset class="form-section">
+            <legend><span class="legend-icon soil-icon" aria-hidden="true">◈</span><span><strong>Soil health</strong><small>Nutrients help us understand your field’s starting point.</small></span></legend>
+            <div class="form-grid grid-three">
+              <div class="form-group"><label for="N">Nitrogen <span class="unit">N</span></label><div class="input-wrap"><input type="number" id="N" name="N" min="0" step="any" placeholder="e.g. 90" required /><span class="input-unit">model units</span></div></div>
+              <div class="form-group"><label for="P">Phosphorus <span class="unit">P</span></label><div class="input-wrap"><input type="number" id="P" name="P" min="0" step="any" placeholder="e.g. 42" required /><span class="input-unit">model units</span></div></div>
+              <div class="form-group"><label for="K">Potassium <span class="unit">K</span></label><div class="input-wrap"><input type="number" id="K" name="K" min="0" step="any" placeholder="e.g. 43" required /><span class="input-unit">model units</span></div></div>
+              <div class="form-group"><label for="ph">Soil pH</label><div class="input-wrap"><input type="number" id="ph" name="ph" min="0" max="14" step="0.1" placeholder="e.g. 6.5" required /><span class="input-unit">pH</span></div></div>
             </div>
-            
-            <div class="button-group">
-                <button type="submit" class="predict-btn" id="predictBtn">🔮 Predict Crop</button>
-                <button type="button" class="explain-btn" id="explainBtn">🧠 Explain with AI</button>
-            </div>
-        </form>
-        
-        <div class="loading" id="loadingDiv">
-            <div class="spinner"></div>
-            <p>Processing your request...</p>
-        </div>
-        
-        <div class="results-section">
-            <div id="result"></div>
-            <div id="limeResults"></div>
-        </div>
-    </div>
+          </fieldset>
 
+          <fieldset class="form-section">
+            <legend><span class="legend-icon climate-icon" aria-hidden="true">☼</span><span><strong>Climate &amp; season</strong><small>Conditions where and when you plan to grow.</small></span></legend>
+            <div class="form-grid grid-two">
+              <div class="form-group"><label for="temperature">Temperature</label><div class="input-wrap"><input type="number" id="temperature" name="temperature" step="0.1" placeholder="e.g. 24.5" required /><span class="input-unit">°C</span></div></div>
+              <div class="form-group"><label for="humidity">Humidity</label><div class="input-wrap"><input type="number" id="humidity" name="humidity" min="0" max="100" step="0.1" placeholder="e.g. 75" required /><span class="input-unit">%</span></div></div>
+              <div class="form-group"><label for="rainfall">Rainfall</label><div class="input-wrap"><input type="number" id="rainfall" name="rainfall" min="0" step="0.1" placeholder="e.g. 180" required /><span class="input-unit">mm</span></div></div>
+              <div class="form-group"><label for="State_Name">State</label><select id="State_Name" name="State_Name" required><option value="">Choose your state</option><option value="uttar pradesh">Uttar Pradesh</option><option value="madhya pradesh">Madhya Pradesh</option><option value="karnataka">Karnataka</option><option value="bihar">Bihar</option><option value="odisha">Odisha</option><option value="tamil nadu">Tamil Nadu</option><option value="rajasthan">Rajasthan</option><option value="assam">Assam</option><option value="maharashtra">Maharashtra</option><option value="andhra pradesh">Andhra Pradesh</option><option value="west bengal">West Bengal</option><option value="chhattisgarh">Chhattisgarh</option><option value="gujarat">Gujarat</option><option value="telangana">Telangana</option><option value="kerala">Kerala</option><option value="haryana">Haryana</option><option value="uttarakhand">Uttarakhand</option><option value="himachal pradesh">Himachal Pradesh</option><option value="nagaland">Nagaland</option><option value="meghalaya">Meghalaya</option><option value="punjab">Punjab</option><option value="jharkhand">Jharkhand</option><option value="arunachal pradesh">Arunachal Pradesh</option><option value="jammu and kashmir">Jammu and Kashmir</option><option value="manipur">Manipur</option><option value="mizoram">Mizoram</option><option value="tripura">Tripura</option><option value="puducherry">Puducherry</option><option value="sikkim">Sikkim</option><option value="andaman and nicobar islands">Andaman and Nicobar Islands</option><option value="dadra and nagar haveli">Dadra and Nagar Haveli</option><option value="chandigarh">Chandigarh</option><option value="goa">Goa</option></select></div>
+              <div class="form-group"><label for="Crop_Type">Growing season</label><select id="Crop_Type" name="Crop_Type" required><option value="">Choose a season</option><option value="kharif">Kharif · Monsoon</option><option value="rabi">Rabi · Winter</option><option value="summer">Summer</option><option value="whole year">Year-round</option></select></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-section farm-section">
+            <legend><span class="legend-icon field-icon" aria-hidden="true">▤</span><span><strong>Your farm</strong><small>Production history adds useful context to the recommendation.</small></span></legend>
+            <div class="form-grid grid-three">
+              <div class="form-group"><label for="area">Cultivated area</label><div class="input-wrap"><input type="number" id="area" name="area" min="0" step="0.01" placeholder="e.g. 2" required /><span class="input-unit">hectares</span></div></div>
+              <div class="form-group"><label for="production">Production</label><div class="input-wrap"><input type="number" id="production" name="production" min="0" step="0.01" placeholder="e.g. 4" required /><span class="input-unit">tons</span></div></div>
+              <div class="form-group"><label for="yield">Yield</label><div class="input-wrap"><input type="number" id="yield" name="yield" min="0" step="0.01" placeholder="e.g. 2" required /><span class="input-unit">tons/ha</span></div></div>
+            </div>
+          </fieldset>
+
+          <div class="form-actions">
+            <p>Recommendations are model-generated estimates. Local knowledge matters.</p>
+            <div class="button-group"><button type="submit" class="predict-btn" id="predictBtn"><span>Get my recommendation</span><span class="button-arrow" aria-hidden="true">→</span></button><button type="button" class="explain-btn" id="explainBtn"><span aria-hidden="true">✳</span> See what shaped it</button></div>
+          </div>
+        </form>
+      </div>
+
+      <aside class="results-panel" aria-label="Your results" aria-live="polite">
+        <div class="results-header"><span class="step-label">YOUR RESULTS</span><span class="results-mark" aria-hidden="true">↗</span></div>
+        <div id="result"><div class="empty-result"><div class="empty-icon" aria-hidden="true">✳</div><h2>Your field,<br />a fresh perspective.</h2><p>Your crop recommendation will appear here after you submit your field details.</p><div class="empty-divider"></div><div class="result-promise"><span aria-hidden="true">◉</span><span>Recommendations based on soil, climate, and season</span></div></div></div>
+        <div id="limeResults"></div>
+        <div class="loading" id="loadingDiv" role="status" aria-live="polite"><span class="spinner"></span><span>Reading your field details…</span></div>
+      </aside>
+    </section>
+
+    <footer class="page-footer"><span>Grown with care <span aria-hidden="true">✳</span></span><span>Smartcrop-IA <span class="footer-separator">·</span> An exploratory crop recommendation tool</span></footer>
+  </main>
   <script src="./script.js"></script>
 </body>
-
-
 </html>
-

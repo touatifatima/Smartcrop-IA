@@ -97,7 +97,14 @@ python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
 | Swagger UI | http://localhost:8000/docs |
 | ReDoc | http://localhost:8000/redoc |
 
-The frontend currently sends requests to `http://localhost:8000`. Keep that port for local use; update the URLs in `script.js` when deploying elsewhere. The browser also needs internet access to load Axios from its CDN.
+The frontend uses the current website origin as its API address by default, so the bundled FastAPI app works locally without extra settings. If you host the frontend separately, configure the API origin immediately before `script.js` in `index.html`:
+
+```html
+<script>window.SMARTCROP_API_URL = "https://your-api-host.example";</script>
+<script src="./script.js"></script>
+```
+
+The API must allow requests from your frontend's domain. The browser uses this address for predictions, explanations, and the API documentation link.
 
 ## Try a prediction
 
