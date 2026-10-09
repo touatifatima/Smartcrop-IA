@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crop Recommendation System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+
+ <body>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <div class="container">
+        <h1>🌱 Smart Crop-XAI </h1>
+        
+        <form id="predictionForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="N">Nitrogen (N):</label>
+                    <input type="number" id="N" name="N" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="P">Phosphorus (P):</label>
+                    <input type="number" id="P" name="P" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="K">Potassium (K):</label>
+                    <input type="number" id="K" name="K" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="temperature">Temperature (°C):</label>
+                    <input type="number" step="0.1" id="temperature" name="temperature" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="humidity">Humidity (%):</label>
+                    <input type="number" step="0.1" id="humidity" name="humidity" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ph">pH Level:</label>
+                    <input type="number" step="0.1" id="ph" name="ph" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="rainfall">Rainfall (mm):</label>
+                    <input type="number" step="0.1" id="rainfall" name="rainfall" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="State_Name">State Name:</label>
+                    <select id="State_Name" name="State_Name" required>
+                        <option value="">--Select State--</option>
+                        <option value="uttar pradesh">Uttar Pradesh</option>
+                        <option value="madhya pradesh">Madhya Pradesh</option>
+                        <option value="karnataka">Karnataka</option>
+                        <option value="bihar">Bihar</option>
+                        <option value="odisha">Odisha</option>
+                        <option value="tamil nadu">Tamil Nadu</option>
+                        <option value="rajasthan">Rajasthan</option>
+                        <option value="assam">Assam</option>
+                        <option value="maharashtra">Maharashtra</option>
+                        <option value="andhra pradesh">Andhra Pradesh</option>
+                        <option value="west bengal">West Bengal</option>
+                        <option value="chhattisgarh">Chhattisgarh</option>
+                        <option value="gujarat">Gujarat</option>
+                        <option value="telangana">Telangana</option>
+                        <option value="kerala">Kerala</option>
+                        <option value="haryana">Haryana</option>
+                        <option value="uttarakhand">Uttarakhand</option>
+                        <option value="himachal pradesh">Himachal Pradesh</option>
+                        <option value="nagaland">Nagaland</option>
+                        <option value="meghalaya">Meghalaya</option>
+                        <option value="punjab">Punjab</option>
+                        <option value="jharkhand">Jharkhand</option>
+                        <option value="arunachal pradesh">Arunachal Pradesh</option>
+                        <option value="jammu and kashmir">Jammu and Kashmir</option>
+                        <option value="manipur">Manipur</option>
+                        <option value="mizoram">Mizoram</option>
+                        <option value="tripura">Tripura</option>
+                        <option value="puducherry">Puducherry</option>
+                        <option value="sikkim">Sikkim</option>
+                        <option value="andaman and nicobar islands">Andaman and Nicobar Islands</option>
+                        <option value="dadra and nagar haveli">Dadra and Nagar Haveli</option>
+                        <option value="chandigarh">Chandigarh</option>
+                        <option value="goa">Goa</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="Crop_Type">Crop Type:</label>
+                    <select id="Crop_Type" name="Crop_Type" required>
+                        <option value="">--Select Crop Type--</option>
+                        <option value="kharif">Kharif</option>
+                        <option value="rabi">Rabi</option>
+                        <option value="summer">Summer</option>
+                        <option value="whole year">Whole Year</option>
+                    </select>
+                </div> 
+                
+                <div class="form-group">
+                    <label for="area">Area (in hectares):</label>
+                    <input type="number" step="0.01" id="area" name="area" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="production">Production (in tons):</label>
+                    <input type="number" step="0.01" id="production" name="production" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="yield">Yield (ton per hectare):</label>
+                    <input type="number" step="0.01" id="yield" name="yield" required>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="predict-btn" id="predictBtn">🔮 Predict Crop</button>
+                <button type="button" class="explain-btn" id="explainBtn">🧠 Explain with AI</button>
+            </div>
+        </form>
+        
+        <div class="loading" id="loadingDiv">
+            <div class="spinner"></div>
+            <p>Processing your request...</p>
+        </div>
+        
+        <div class="results-section">
+            <div id="result"></div>
+            <div id="limeResults"></div>
+        </div>
+    </div>
+
+  <script src="./script.js"></script>
+</body>
+
+
+</html>
+

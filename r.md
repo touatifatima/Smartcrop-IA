@@ -1,0 +1,12 @@
+"N": 90,
+    "P": 42,
+    "K": 43,
+    "temperature": 20.87,
+    "rainfall": 200.9,
+    "ph": 6.5,
+    "State_Name": "gujarat",
+    "Crop_Type": "kharif",
+    "Area_in_hectares": 2.0,
+    "Production_in_tons": 4.0,
+    "Yield_ton_per_hec": 2.0,
+     "Humidity_calculated": 83
